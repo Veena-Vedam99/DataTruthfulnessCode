@@ -1,0 +1,72 @@
+from django.db.models import Count
+from django.shortcuts import render, redirect, get_object_or_404
+import datetime
+
+# Create your views here.
+from Remote_User.models import review_Model,attack_Model,ClientRegister_Model,postdetails_model,recommend_Model,rating_Model
+
+# Extracts the user details and makes a successful login if already registered
+def login(request):
+
+
+    if request.method == "POST" and 'submit1' in request.POST:
+
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        try:
+
+            enter = ClientRegister_Model.objects.get(username=username, password=password)
+            request.session["userid"] = enter.id
+            return redirect('View_All_Post_Details')
+        except:
+            pass
+
+    return render(request,'RUser/login.html')
+
+
+# Registers a user with all the entered data
+def Register1(request):
+
+    if request.method == "POST":
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        phoneno = request.POST.get('phoneno')
+        country = request.POST.get('country')
+        state = request.POST.get('state')
+        city = request.POST.get('city')
+        ClientRegister_Model.objects.create(username=username, email=email, password=password, phoneno=phoneno,
+                                            country=country, state=state, city=city)
+
+        return render(request, 'RUser/Register1.html')
+    else:
+
+        return render(request,'RUser/Register1.html')
+
+
+# Compares the user ways of login and adds it to attacker's information if login url varies from regular one.
+
+def Attack_Data(request):
+
+
+    datetime_object = datetime.datetime.now()
+
+
+    if request.method == "POST":
+        uname = request.POST.get('uname')
+        pname = request.POST.get('pname')
+        feedback = request.POST.get('feedback')
+        cmd = request.POST.get('cont')
+        se = 'Attack'
+
+        obj = get_object_or_404(postdetails_model, names=pname)
+        obj.f_story = cmd
+        obj.save(update_fields=['f_story'])
+
+
+        attack_Model.objects.create(uname=uname , dcont=cmd,dt=datetime_object,pname=pname ,feedback=feedback)
+
+    return render(request,'RUser/Attack_Data.html')
+
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
